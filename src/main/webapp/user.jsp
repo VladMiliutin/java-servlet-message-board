@@ -1,10 +1,5 @@
-<%@ page import="com.vladm.demoservlet.model.User" %><%--
-  Created by IntelliJ IDEA.
-  User: vladm
-  Date: 9/28/22
-  Time: 7:44 PM
-  To change this template use File | Settings | File Templates.
---%>
+<%@ page import="com.vladm.demoservlet.model.User" %>
+<%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -12,9 +7,15 @@
 </head>
 <body>
 <%
-    User user = (User) request.getAttribute("user");
+    List<User> users = (List<User>) request.getAttribute("users");
 %>
-<h1>Email: <%=user.getEmail()%> </h1>
-<h1>Name: <%=user.getName()%> </h1>
+
+<% for(int i = 0; i < users.size(); i+=1) { %>
+
+    <h1>Email: <%=users.get(i).getEmail()%> </h1>
+    <h1>Name: <%=users.get(i).getName()%> </h1>
+
+<% }
+%>
 </body>
 </html>
