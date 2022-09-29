@@ -1,5 +1,6 @@
 package com.vladm.demoservlet.service;
 
+import com.vladm.demoservlet.exception.UserExistsException;
 import com.vladm.demoservlet.model.User;
 
 import java.util.*;
@@ -9,6 +10,10 @@ public class UserService {
     public final static Map<String, User> USER_MAP = new HashMap<>();
 
     public User createUser(String name, String email) {
+        if(userExists(name, email)){
+           throw new UserExistsException();
+        }
+
         final String id = UUID.randomUUID().toString();
         User user = new User(id, name, email);
         USER_MAP.put(id, user);
@@ -35,5 +40,14 @@ public class UserService {
                 .stream()
                 .filter(usr -> usr.getEmail().equals(email))
                 .findFirst();
+    }
+
+    public boolean userExists(String name, String email){
+        Optional<User> usrOptional = USER_MAP.values()
+                .stream()
+                .filter(usr -> usr.getEmail().equals(email) || usr.getName().equals(name))
+                .findFirst();
+
+        return usrOptional.isPresent();
     }
 }
