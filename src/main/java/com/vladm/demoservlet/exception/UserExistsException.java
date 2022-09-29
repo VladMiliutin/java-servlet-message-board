@@ -1,8 +1,10 @@
 package com.vladm.demoservlet.exception;
 
-public class UserExistsException extends RuntimeException {
+import jakarta.servlet.http.HttpServletResponse;
+
+public class UserExistsException extends ClientException {
 
     public UserExistsException() {
-        super("User with this name/email already exists");
+        super("User with this name/email already exists", HttpServletResponse.SC_BAD_REQUEST);
     }
 }
