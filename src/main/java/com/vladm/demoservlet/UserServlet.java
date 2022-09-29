@@ -1,6 +1,7 @@
 package com.vladm.demoservlet;
 
 import com.vladm.demoservlet.model.User;
+import com.vladm.demoservlet.service.UserService;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -10,16 +11,13 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @WebServlet(name = "userServlet", value = "/user")
 public class UserServlet extends HttpServlet {
 
-    public Map<String, User> USER_MAP = new HashMap<>();
-
+    private UserService userService = new UserService();
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        List<User> users = new ArrayList<>(USER_MAP.values());
-        request.setAttribute("users", users);
+        request.setAttribute("users", userService.getAllUsers());
         returnJsp(request, response);
     }
 
@@ -28,9 +26,7 @@ public class UserServlet extends HttpServlet {
         String name = req.getParameter("name");
         String email = req.getParameter("email");
 
-        User user = createUser(name, email);
-
-        USER_MAP.put(user.id, user);
+        userService.createUser(name, email);
     }
 
     private static void returnJsp(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -38,8 +34,4 @@ public class UserServlet extends HttpServlet {
         requestDispatcher.forward(request, response);
     }
 
-    public User createUser(String name, String email) {
-        final String id = UUID.randomUUID().toString();
-        return new User(id, name, email);
-    }
 }
