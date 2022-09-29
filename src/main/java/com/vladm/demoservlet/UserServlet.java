@@ -11,15 +11,36 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @WebServlet(name = "userServlet", value = "/user")
 public class UserServlet extends HttpServlet {
 
     private final UserService userService = new UserService();
 
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        request.setAttribute("users", userService.getAllUsers());
-        returnJsp(request, response);
+        final List<User> users;
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        if(parameterMap.isEmpty()) {
+            users = userService.getAllUsers();
+        } else {
+            String name = request.getParameter("name");
+            String email = request.getParameter("email");
+
+            Set<User> userSet = new HashSet<>();
+            userService.findUserByName(name)
+                    .ifPresent(usr -> userSet.add(usr));
+            userService.findUserByEmail(email)
+                    .ifPresent(usr -> userSet.add(usr));
+
+            users = new ArrayList<>(userSet);
+        }
+
+        request.setAttribute("users", users);
+        userListPage(request, response);
+
     }
 
     @Override
@@ -33,7 +54,7 @@ public class UserServlet extends HttpServlet {
         out.println(user.toString());
     }
 
-    private static void returnJsp(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private static void userListPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         RequestDispatcher requestDispatcher = request.getRequestDispatcher("user.jsp");
         requestDispatcher.forward(request, response);
     }
