@@ -1,5 +1,7 @@
 package com.vladm.demoservlet.service;
 
+import com.vladm.demoservlet.dao.FileStorageUserDao;
+import com.vladm.demoservlet.dao.UserDao;
 import com.vladm.demoservlet.exception.UserExistsException;
 import com.vladm.demoservlet.model.User;
 
@@ -7,7 +9,7 @@ import java.util.*;
 
 public class UserService {
 
-    public final static Map<String, User> USER_MAP = new HashMap<>();
+    private final UserDao userDao = new FileStorageUserDao();
 
     public User createUser(String name, String email) {
         if(userExists(name, email)){
@@ -16,34 +18,26 @@ public class UserService {
 
         final String id = UUID.randomUUID().toString();
         User user = new User(id, name, email);
-        USER_MAP.put(id, user);
-        return user;
+        return userDao.save(user);
     }
 
     public List<User> getAllUsers() {
-        return new ArrayList<>(USER_MAP.values());
+        return userDao.findAll();
     }
-
     public void deleteUser(String id) {
-        USER_MAP.remove(id);
+        userDao.delete(id);
     }
 
     public Optional<User> findUserByName(String name) {
-        return USER_MAP.values()
-                .stream()
-                .filter(usr -> usr.getName().equals(name))
-                .findFirst();
+        return userDao.findByName(name);
     }
 
     public Optional<User> findUserByEmail(String email) {
-        return USER_MAP.values()
-                .stream()
-                .filter(usr -> usr.getEmail().equals(email))
-                .findFirst();
+        return userDao.findByEmail(email);
     }
 
     public boolean userExists(String name, String email){
-        Optional<User> usrOptional = USER_MAP.values()
+        Optional<User> usrOptional = userDao.findAll()
                 .stream()
                 .filter(usr -> usr.getEmail().equals(email) || usr.getName().equals(name))
                 .findFirst();

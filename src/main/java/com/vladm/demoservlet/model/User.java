@@ -4,14 +4,18 @@ import java.util.Objects;
 
 public class User {
 
-    public String id;
-    public String name;
-    public String email;
+    private String id;
+    private String name;
+    private String email;
 
     public User(String id, String name, String email){
         this.id = id;
         this.name = name;
         this.email = email;
+    }
+
+    public User() {
+
     }
 
     public void setName(String name){
