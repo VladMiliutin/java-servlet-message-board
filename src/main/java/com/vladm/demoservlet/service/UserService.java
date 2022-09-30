@@ -5,11 +5,18 @@ import com.vladm.demoservlet.dao.UserDao;
 import com.vladm.demoservlet.exception.UserExistsException;
 import com.vladm.demoservlet.model.User;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public class UserService {
 
-    private final UserDao userDao = new FileStorageUserDao();
+    private static UserService INSTANCE;
+    private final UserDao userDao;
+
+    public UserService(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     public User createUser(String name, String email) {
         if(userExists(name, email)){
@@ -43,5 +50,13 @@ public class UserService {
                 .findFirst();
 
         return usrOptional.isPresent();
+    }
+
+    public static UserService getInstance(){
+        if(INSTANCE == null) {
+            INSTANCE = new UserService(FileStorageUserDao.getInstance());
+        }
+
+        return INSTANCE;
     }
 }

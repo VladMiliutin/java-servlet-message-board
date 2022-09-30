@@ -9,5 +9,6 @@
 </h1>
 <br/>
 <a href="user">User</a>
+<a href="message">message</a>
 </body>
 </html>

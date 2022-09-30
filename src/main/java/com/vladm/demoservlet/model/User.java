@@ -1,5 +1,7 @@
 package com.vladm.demoservlet.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class User {
@@ -7,6 +9,8 @@ public class User {
     private String id;
     private String name;
     private String email;
+
+    private List<Message> messages = new ArrayList<>();
 
     public User(String id, String name, String email){
         this.id = id;
@@ -48,6 +52,18 @@ public class User {
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
         return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(email, user.email);
+    }
+
+    public void addMessage(Message message){
+        this.messages.add(message);
+    }
+
+    public List<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
     }
 
     @Override

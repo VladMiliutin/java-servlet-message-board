@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vladm.demoservlet.model.User;
+import com.vladm.demoservlet.util.ObjectMapperInstance;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -21,15 +22,22 @@ public class FileStorageUserDao implements UserDao {
 
     private final static Map<String, User> USER_MAP = new HashMap<>();
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper;
 
     // Helps us to understand if map is empty because server restarted or because all users are gone
     private boolean freshStart = true;
+
+    private static FileStorageUserDao INSTANCE;
+
+    public FileStorageUserDao(ObjectMapper mapper) {
+        this.mapper = mapper;
+    }
 
     @Override
     public User save(User user) {
         sync();
         USER_MAP.put(user.getId(), user);
+        sync();
         return user;
 
     }
@@ -43,7 +51,7 @@ public class FileStorageUserDao implements UserDao {
     @Override
     public Optional<User> findOne(String id) {
         sync();
-        return Optional.empty();
+        return Optional.ofNullable(USER_MAP.get(id));
     }
 
     @Override
@@ -70,6 +78,15 @@ public class FileStorageUserDao implements UserDao {
     public void delete(String id) {
         sync();
         USER_MAP.remove(id);
+        sync();
+    }
+
+    @Override
+    public User update(User user) {
+        sync();
+        USER_MAP.put(user.getId(), user);
+        sync();
+        return user;
     }
 
     public void sync() {
@@ -98,5 +115,12 @@ public class FileStorageUserDao implements UserDao {
         }
 
         return file;
+    }
+
+    public static FileStorageUserDao getInstance(){
+        if(INSTANCE == null) {
+            INSTANCE = new FileStorageUserDao(ObjectMapperInstance.getInstance());
+        }
+        return INSTANCE;
     }
 }

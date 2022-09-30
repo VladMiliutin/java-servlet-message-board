@@ -1,4 +1,4 @@
-package com.vladm.demoservlet;
+package com.vladm.demoservlet.servlet;
 
 import com.vladm.demoservlet.model.User;
 import com.vladm.demoservlet.service.UserService;
@@ -12,12 +12,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @WebServlet(name = "userServlet", value = "/user")
 public class UserServlet extends HttpServlet {
 
-    private final UserService userService = new UserService();
+    private final UserService userService = UserService.getInstance();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
