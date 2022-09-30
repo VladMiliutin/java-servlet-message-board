@@ -4,6 +4,9 @@ import com.vladm.demoservlet.dao.FileStorageUserDao;
 import com.vladm.demoservlet.dao.UserDao;
 import com.vladm.demoservlet.model.Message;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class MessageService {
@@ -26,6 +29,12 @@ public class MessageService {
                     return msg;
                 })
                 .orElse(null);
+    }
+
+    public List<Message> findAll(String userId) {
+        return userDao.findOne(userId)
+                .map(usr -> usr.getMessages())
+                .orElse(new ArrayList<>());
     }
 
     public static MessageService getInstance(){
