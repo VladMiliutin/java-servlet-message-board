@@ -2,6 +2,7 @@ package com.vladm.demoservlet.servlet;
 
 import com.vladm.demoservlet.model.Message;
 import com.vladm.demoservlet.service.MessageService;
+import com.vladm.demoservlet.util.AuthUtils;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
@@ -14,17 +15,14 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.util.List;
 
-import static com.vladm.demoservlet.model.RequestParams.USER_ID;
-
 @WebServlet(name = "messageServlet", value = "/message")
 public class MessageServlet extends HttpServlet {
 
     private final MessageService messageService = MessageService.getInstance();
-    private Message message = null;
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String userId = request.getParameter(USER_ID);
+        String userId = AuthUtils.getUserInfoFromReq(request).getUserId();
         List<Message> messages = messageService.findAll(userId);
         request.setAttribute("messages", messages);
         RequestDispatcher requestDispatcher = request.getRequestDispatcher("messages.jsp");
@@ -36,10 +34,9 @@ public class MessageServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ServletInputStream inputStream = request.getInputStream();
         String text = IOUtils.toString(inputStream);
-        String userId = request.getParameter(USER_ID);
+        String userId = AuthUtils.getUserInfoFromReq(request).getUserId();
 
         Message message = messageService.publishMessage(userId, text);
-        this.message = message;
         response.getWriter().println(message);
     }
 }

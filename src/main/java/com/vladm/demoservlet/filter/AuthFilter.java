@@ -3,6 +3,9 @@ package com.vladm.demoservlet.filter;
 import com.vladm.demoservlet.dao.FileStorageUserDao;
 import com.vladm.demoservlet.dao.UserDao;
 import com.vladm.demoservlet.model.User;
+import com.vladm.demoservlet.model.UserPrincipal;
+import com.vladm.demoservlet.util.AuthUtils;
+import com.vladm.demoservlet.util.MutableHttpServletRequest;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpFilter;
@@ -12,33 +15,31 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
 
+import static com.vladm.demoservlet.model.RequestParams.ID;
+
 @WebFilter(urlPatterns = "/*")
 public class AuthFilter extends HttpFilter {
 
     private final UserDao userDao = FileStorageUserDao.getInstance();
-    private final static Base64.Decoder DECODER = Base64.getDecoder();
 
     // check url list where auth required :)
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
 
-        String authHeader = req.getHeader("Authorization");
-
         if(req.getRequestURI().contains("/login") || req.getRequestURI().contains("/index")){
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
 
-        if(authHeader != null && authHeader.substring(0, 5).equalsIgnoreCase(HttpServletRequest.BASIC_AUTH)){
-            String usernameAndPassword = new String(DECODER.decode(authHeader.substring(6)));
-            String username = usernameAndPassword.split(":")[0];
-            String password = usernameAndPassword.split(":")[1];
+        UserPrincipal usr = AuthUtils.getUserInfoFromReq(req);
+        if(usr != null) {
+            Optional<User> dbUser = userDao.findByName(usr.getName());
 
-            Optional<User> dbUser = userDao.findByName(username);
-
-            if(dbUser.isPresent() && dbUser.get().getPassword().equals(password)) {
-                filterChain.doFilter(servletRequest, servletResponse);
+            if(dbUser.isPresent() && dbUser.get().getPassword().equals(usr.getPassword())) {
+                MutableHttpServletRequest mutatedReq = new MutableHttpServletRequest(req);
+                mutatedReq.putHeader(ID, dbUser.get().getId());
+                filterChain.doFilter(mutatedReq, servletResponse);
             } else {
                 requireLogin((HttpServletResponse) servletResponse);
             }
