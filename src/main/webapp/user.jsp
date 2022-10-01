@@ -10,10 +10,12 @@
     List<User> users = (List<User>) request.getAttribute("users");
 %>
 
-<% for(int i = 0; i < users.size(); i+=1) { %>
+<% for (User user : users) { %>
 
-    <h1>Email: <%=users.get(i).getEmail()%> </h1>
-    <h1>Name: <%=users.get(i).getName()%> </h1>
+<h1>Email: <%=user.getEmail()%>
+</h1>
+<h1>Name: <%=user.getName()%>
+</h1>
 
 <% }
 %>
