@@ -14,6 +14,8 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.util.List;
 
+import static com.vladm.demoservlet.model.RequestParams.USER_ID;
+
 @WebServlet(name = "messageServlet", value = "/message")
 public class MessageServlet extends HttpServlet {
 
@@ -22,7 +24,7 @@ public class MessageServlet extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String userId = request.getParameter("userId");
+        String userId = request.getParameter(USER_ID);
         List<Message> messages = messageService.findAll(userId);
         request.setAttribute("messages", messages);
         RequestDispatcher requestDispatcher = request.getRequestDispatcher("messages.jsp");
@@ -34,7 +36,7 @@ public class MessageServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ServletInputStream inputStream = request.getInputStream();
         String text = IOUtils.toString(inputStream);
-        String userId = request.getParameter("userId");
+        String userId = request.getParameter(USER_ID);
 
         Message message = messageService.publishMessage(userId, text);
         this.message = message;

@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.*;
 
 @WebFilter(urlPatterns = "/*")
@@ -38,18 +37,20 @@ public class AuthFilter extends HttpFilter {
 
             Optional<User> dbUser = userDao.findByName(username);
 
-            if(dbUser.isPresent()) {
+            if(dbUser.isPresent() && dbUser.get().getPassword().equals(password)) {
                 filterChain.doFilter(servletRequest, servletResponse);
             } else {
-                HttpServletResponse resp = (HttpServletResponse) servletResponse;
-                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                requireLogin((HttpServletResponse) servletResponse);
             }
         } else {
-            HttpServletResponse resp = (HttpServletResponse) servletResponse;
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            resp.setHeader("WWW-Authenticate", "Basic");
+            requireLogin((HttpServletResponse) servletResponse);
 
         }
+    }
+
+    private static void requireLogin(HttpServletResponse resp) {
+        resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        resp.setHeader("WWW-Authenticate", "Basic");
     }
 
 }

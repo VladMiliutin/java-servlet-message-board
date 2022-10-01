@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
+import static com.vladm.demoservlet.model.RequestParams.*;
+
 @WebServlet(name = "userServlet", value = "/user")
 public class UserServlet extends HttpServlet {
 
@@ -25,8 +27,8 @@ public class UserServlet extends HttpServlet {
         if(parameterMap.isEmpty()) {
             users = userService.getAllUsers();
         } else {
-            String name = request.getParameter("name");
-            String email = request.getParameter("email");
+            String name = request.getParameter(USERNAME);
+            String email = request.getParameter(EMAIL);
 
             Set<User> userSet = new HashSet<>();
             userService.findUserByName(name)
@@ -44,12 +46,13 @@ public class UserServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String name = req.getParameter("name");
-        String email = req.getParameter("email");
+        String name = req.getParameter(USERNAME);
+        String email = req.getParameter(EMAIL);
+        String password = req.getParameter(PASSWORD);
 
         PrintWriter out = resp.getWriter();
 
-        User user = userService.createUser(name, email);
+        User user = userService.createUser(name, email, password);
         out.println(user.toString());
     }
 

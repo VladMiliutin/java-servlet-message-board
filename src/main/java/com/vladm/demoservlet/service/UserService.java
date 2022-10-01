@@ -18,13 +18,13 @@ public class UserService {
         this.userDao = userDao;
     }
 
-    public User createUser(String name, String email) {
+    public User createUser(String name, String email, String password) {
         if(userExists(name, email)){
            throw new UserExistsException();
         }
 
         final String id = UUID.randomUUID().toString();
-        User user = new User(id, name, email);
+        User user = new User(id, name, email, password);
         return userDao.save(user);
     }
 
