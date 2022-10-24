@@ -7,17 +7,16 @@
 </head>
 <body>
 <%
-    List<User> users = (List<User>) request.getAttribute("users");
+    User user = (User) request.getAttribute("user");
 %>
 
-<% for (User user : users) { %>
+<h1>Welcome <%=user.getName()%></h1>
 
-<h1>Email: <%=user.getEmail()%>
-</h1>
-<h1>Name: <%=user.getName()%>
-</h1>
-
-<% }
-%>
+<p>
+    You can find your messages here: <a href="message">Link</a>
+</p>
+<p>
+You can search for another users here: <a href="users">Link</a>
+</p>
 </body>
 </html>

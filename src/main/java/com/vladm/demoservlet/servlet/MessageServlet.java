@@ -1,8 +1,9 @@
 package com.vladm.demoservlet.servlet;
 
 import com.vladm.demoservlet.model.Message;
+import com.vladm.demoservlet.model.UserPrincipal;
 import com.vladm.demoservlet.service.MessageService;
-import com.vladm.demoservlet.util.AuthUtils;
+import com.vladm.demoservlet.util.MutableHttpServletRequest;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
@@ -22,7 +23,7 @@ public class MessageServlet extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String userId = AuthUtils.getUserInfoFromReq(request).getUserId();
+        String userId = ((UserPrincipal) new MutableHttpServletRequest(request).getUserPrincipal()).getUserId();
         List<Message> messages = messageService.findAll(userId);
         request.setAttribute("messages", messages);
         RequestDispatcher requestDispatcher = request.getRequestDispatcher("messages.jsp");
@@ -34,7 +35,7 @@ public class MessageServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ServletInputStream inputStream = request.getInputStream();
         String text = IOUtils.toString(inputStream);
-        String userId = AuthUtils.getUserInfoFromReq(request).getUserId();
+        String userId = ((UserPrincipal) new MutableHttpServletRequest(request).getUserPrincipal()).getUserId();
 
         Message message = messageService.publishMessage(userId, text);
         response.getWriter().println(message);

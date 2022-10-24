@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class FileStorageUserDao implements UserDao {
 
-    private final static String PATH_TO_FOLDER = "/home/vladm/IdeaProjects/demo-servlet-git/data";
+    private final static String PATH_TO_FOLDER = System.getProperty("FILE_STORAGE_PATH");
 
     private final static Map<String, User> USER_MAP = new HashMap<>();
 
@@ -109,6 +109,7 @@ public class FileStorageUserDao implements UserDao {
     private static File readFile() throws IOException {
         File file = FileUtils.getFile(PATH_TO_FOLDER + "/users.json");
         if(!file.exists()) {
+            file.getParentFile().mkdirs();
             file.createNewFile();
             FileUtils.write(file, "{}");
             file = FileUtils.getFile(PATH_TO_FOLDER + "/users.json");
