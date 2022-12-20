@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class help us with data storage as files.
@@ -18,9 +19,9 @@ import java.util.*;
  */
 public class FileStorageUserDao implements UserDao {
 
-    private final static String PATH_TO_FOLDER = System.getProperty("FILE_STORAGE_PATH");
+    private final static String FILE = System.getProperty("FILE_STORAGE_PATH") + "/users.json";
 
-    private final static Map<String, User> USER_MAP = new HashMap<>();
+    private final Map<String, User> usersMap = new ConcurrentHashMap<>();
 
     private final ObjectMapper mapper;
 
@@ -36,7 +37,7 @@ public class FileStorageUserDao implements UserDao {
     @Override
     public User save(User user) {
         sync();
-        USER_MAP.put(user.getId(), user);
+        usersMap.put(user.getId(), user);
         sync();
         return user;
 
@@ -45,19 +46,19 @@ public class FileStorageUserDao implements UserDao {
     @Override
     public List<User> findAll() {
         sync();
-        return new ArrayList<>(USER_MAP.values());
+        return new ArrayList<>(usersMap.values());
     }
 
     @Override
     public Optional<User> findOne(String id) {
         sync();
-        return Optional.ofNullable(USER_MAP.get(id));
+        return Optional.ofNullable(usersMap.get(id));
     }
 
     @Override
     public Optional<User> findByName(String name) {
         sync();
-        return USER_MAP.values()
+        return usersMap.values()
                 .stream()
                 .filter(usr -> usr.getName().equals(name))
                 .findFirst();
@@ -67,7 +68,7 @@ public class FileStorageUserDao implements UserDao {
     @Override
     public Optional<User> findByEmail(String email) {
         sync();
-        return USER_MAP.values()
+        return usersMap.values()
                 .stream()
                 .filter(usr -> usr.getEmail().equals(email))
                 .findFirst();
@@ -77,14 +78,14 @@ public class FileStorageUserDao implements UserDao {
     @Override
     public void delete(String id) {
         sync();
-        USER_MAP.remove(id);
+        usersMap.remove(id);
         sync();
     }
 
     @Override
     public User update(User user) {
         sync();
-        USER_MAP.put(user.getId(), user);
+        usersMap.put(user.getId(), user);
         sync();
         return user;
     }
@@ -92,12 +93,12 @@ public class FileStorageUserDao implements UserDao {
     public void sync() {
         try {
             File file = readFile();
-            if(USER_MAP.isEmpty() && freshStart){
+            if(usersMap.isEmpty() && freshStart){
                 Map<String, User> users = mapper.readValue(file, new TypeReference<Map<String, User>>() {});
-                USER_MAP.putAll(users);
+                usersMap.putAll(users);
                 freshStart = false;
             } else {
-                JsonNode jsonNode = mapper.valueToTree(USER_MAP);
+                JsonNode jsonNode = mapper.valueToTree(usersMap);
                 FileUtils.write(file, jsonNode.toPrettyString());
             }
         } catch (IOException e) {
@@ -107,12 +108,12 @@ public class FileStorageUserDao implements UserDao {
     }
 
     private static File readFile() throws IOException {
-        File file = FileUtils.getFile(PATH_TO_FOLDER + "/users.json");
+        File file = FileUtils.getFile(FILE);
         if(!file.exists()) {
             file.getParentFile().mkdirs();
             file.createNewFile();
             FileUtils.write(file, "{}");
-            file = FileUtils.getFile(PATH_TO_FOLDER + "/users.json");
+            file = FileUtils.getFile(FILE );
         }
 
         return file;

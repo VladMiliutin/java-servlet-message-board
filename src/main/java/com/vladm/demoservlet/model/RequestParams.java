@@ -7,4 +7,5 @@ public interface RequestParams {
     String ID = "id";
     String USER_ID = "userId";
     String EMAIL = "email";
+    String REPLY_TO = "replyTo";
 }

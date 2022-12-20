@@ -8,7 +8,7 @@
         async function post() {
             let msg = document.getElementById('message').value;
 
-            await fetch("message", {method: 'POST', body: msg})
+            await fetch("messages", {method: 'POST', body: msg})
             document.location.reload()
         }
     </script>

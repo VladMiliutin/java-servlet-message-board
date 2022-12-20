@@ -24,7 +24,7 @@ public class AuthFilter extends HttpFilter {
     private final static Map<String, List<String>> ALLOW_URL_MAP = new HashMap<>();
 
     static {
-        ALLOW_URL_MAP.put("GET", List.of("/index", "/", "/sign-up.jsp"));
+        ALLOW_URL_MAP.put("GET", List.of("/index", "/", "/sign-up.jsp", ""));
         ALLOW_URL_MAP.put("POST", List.of("/user"));
     }
 

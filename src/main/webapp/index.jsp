@@ -8,5 +8,6 @@
 <h1>Welcome to our platform</h1>
 <a href="sign-up.jsp">Sign Up</a>
 <a href="users">Sign In</a>
+<a href="messages">Messages</a>
 </body>
 </html>

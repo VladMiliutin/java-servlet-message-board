@@ -67,4 +67,8 @@ public class MutableHttpServletRequest extends HttpServletRequestWrapper {
 
         return user;
     }
+
+    public static String userId(HttpServletRequest req) {
+        return ((UserPrincipal) new MutableHttpServletRequest(req).getUserPrincipal()).getUserId();
+    }
 }

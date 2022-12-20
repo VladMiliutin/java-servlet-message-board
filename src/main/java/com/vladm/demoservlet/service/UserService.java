@@ -2,6 +2,7 @@ package com.vladm.demoservlet.service;
 
 import com.vladm.demoservlet.dao.FileStorageUserDao;
 import com.vladm.demoservlet.dao.UserDao;
+import com.vladm.demoservlet.exception.ClientException;
 import com.vladm.demoservlet.exception.UserExistsException;
 import com.vladm.demoservlet.model.User;
 
@@ -26,6 +27,11 @@ public class UserService {
         final String id = UUID.randomUUID().toString();
         User user = new User(id, name, email, password);
         return userDao.save(user);
+    }
+
+    public User findOne(String id) {
+        return userDao.findOne(id)
+                .orElse(User.DEFAULT);
     }
 
     public List<User> getAllUsers() {

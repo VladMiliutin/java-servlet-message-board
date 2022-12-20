@@ -11,7 +11,9 @@ public class User {
     private String email;
     private String password;
 
-    private List<Message> messages = new ArrayList<>();
+    private List<String> messages = new ArrayList<>();
+
+    public final static User DEFAULT = new User("not-found", "default", "default", "");
 
     public User(String id, String name, String email, String password){
         this.id = id;
@@ -56,15 +58,15 @@ public class User {
         return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(email, user.email);
     }
 
-    public void addMessage(Message message){
+    public void addMessage(String message){
         this.messages.add(message);
     }
 
-    public List<Message> getMessages() {
+    public List<String> getMessages() {
         return messages;
     }
 
-    public void setMessages(List<Message> messages) {
+    public void setMessages(List<String> messages) {
         this.messages = messages;
     }
 

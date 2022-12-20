@@ -1,5 +1,7 @@
 package com.vladm.demoservlet.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Message {
@@ -8,10 +10,18 @@ public class Message {
     private String text;
     private String userId;
 
-    public Message(String id, String text, String userId) {
+    private boolean isReply;
+
+    private List<String> replies = new ArrayList<>();
+
+    private String replyId;
+
+    public Message(String id, String text, String userId, boolean isReply, String replyId) {
         this.id = id;
         this.text = text;
         this.userId = userId;
+        this.isReply = isReply;
+        this.replyId = replyId;
     }
 
     public Message() {
@@ -41,6 +51,27 @@ public class Message {
         this.userId = userId;
     }
 
+    public boolean isReply() {
+        return isReply;
+    }
+
+    public void setReply(boolean reply) {
+        isReply = reply;
+    }
+
+    public List<String> getReplies() {
+        return replies;
+    }
+
+    public void setReplies(List<String> replies) {
+        this.replies = replies;
+    }
+
+
+    public void addReply(String messageId) {
+        this.replies.add(messageId);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -61,5 +92,13 @@ public class Message {
                 ", text='" + text + '\'' +
                 ", userId='" + userId + '\'' +
                 '}';
+    }
+
+    public String getReplyId() {
+        return replyId;
+    }
+
+    public void setReplyId(String replyId) {
+        this.replyId = replyId;
     }
 }

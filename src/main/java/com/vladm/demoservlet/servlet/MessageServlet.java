@@ -1,43 +1,30 @@
 package com.vladm.demoservlet.servlet;
 
-import com.vladm.demoservlet.model.Message;
-import com.vladm.demoservlet.model.UserPrincipal;
+import com.vladm.demoservlet.model.MessageResponse;
 import com.vladm.demoservlet.service.MessageService;
 import com.vladm.demoservlet.util.MutableHttpServletRequest;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
-import java.util.List;
 
-@WebServlet(name = "messageServlet", value = "/message")
+@WebServlet(name = "messageServlet", value = "/messages/*")
 public class MessageServlet extends HttpServlet {
 
     private final MessageService messageService = MessageService.getInstance();
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String userId = ((UserPrincipal) new MutableHttpServletRequest(request).getUserPrincipal()).getUserId();
-        List<Message> messages = messageService.findAll(userId);
-        request.setAttribute("messages", messages);
-        RequestDispatcher requestDispatcher = request.getRequestDispatcher("messages.jsp");
-        requestDispatcher.forward(request, response);
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        final String messageId = ((MutableHttpServletRequest) req).getPath().substring("/messages/".length());
 
+        final var message = messageService.findOne(messageId);
+
+        MessageResponse messageResp = messageService.transformToMessageResponse(message);
+        req.setAttribute("message", messageResp);
+        req.getRequestDispatcher("/single-message.jsp").forward(req, resp);
     }
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ServletInputStream inputStream = request.getInputStream();
-        String text = IOUtils.toString(inputStream);
-        String userId = ((UserPrincipal) new MutableHttpServletRequest(request).getUserPrincipal()).getUserId();
-
-        Message message = messageService.publishMessage(userId, text);
-        response.getWriter().println(message);
-    }
 }
