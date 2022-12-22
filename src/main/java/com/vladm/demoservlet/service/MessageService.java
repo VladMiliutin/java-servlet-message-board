@@ -4,10 +4,8 @@ import com.vladm.demoservlet.dao.FSMessageDao;
 import com.vladm.demoservlet.dao.FileStorageUserDao;
 import com.vladm.demoservlet.dao.MessageDao;
 import com.vladm.demoservlet.dao.UserDao;
-import com.vladm.demoservlet.exception.ClientException;
+import com.vladm.demoservlet.exception.NotFoundException;
 import com.vladm.demoservlet.model.Message;
-import com.vladm.demoservlet.model.MessageResponse;
-import com.vladm.demoservlet.model.User;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,7 +44,7 @@ public class MessageService {
 
     public Message findOne(String id) {
         return messageDao.findOne(id)
-                .orElseThrow(() -> new ClientException("Message not found", 404));
+                .orElseThrow(() -> new NotFoundException("Message not found"));
     }
 
     public List<Message> findAll(String userId) {
@@ -66,31 +64,6 @@ public class MessageService {
                 .collect(Collectors.toList());
     }
 
-    public MessageResponse transformToMessageResponse(Message message) {
-        final var messageReplies =  this.findAllReplies(message.getId());
-
-        final var replyTo = Optional.ofNullable(message.getReplyId())
-                .map(id -> {
-                    final var msg = this.findOne(id);
-                    final var usr = userDao.findOne(msg.getUserId()).orElse(User.DEFAULT);
-
-                    return new MessageResponse(msg.getId(), usr.getId(), msg.getText(), usr.getName(), false, null, Collections.emptyList());
-                })
-                .orElse(null);
-
-        final var user = userDao.findOne(message.getUserId()).orElse(User.DEFAULT);
-        final var repliesWithUserInfo = messageReplies.stream()
-                .map(msg -> {
-                    final var usr = userDao.findOne(msg.getUserId()).orElse(User.DEFAULT);
-                    System.out.println("REPLY = " + msg);
-                    System.out.println("USR = " + usr);
-                    // yea, it's reply, but it's inside replyList, so no need to mark as reply
-                    return new MessageResponse(msg.getId(), usr.getId(), msg.getText(), usr.getName(), false, null, Collections.emptyList());
-                })
-                .collect(Collectors.toList());
-
-        return new MessageResponse(message.getId(), user.getId(), message.getText(), user.getName(), message.isReply(), replyTo, repliesWithUserInfo);
-    }
     public static MessageService getInstance(){
         if(INSTANCE == null){
             INSTANCE = new MessageService(FileStorageUserDao.getInstance(), FSMessageDao.getInstance());

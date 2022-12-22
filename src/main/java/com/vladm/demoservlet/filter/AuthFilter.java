@@ -45,19 +45,20 @@ public class AuthFilter extends HttpFilter {
 
         var usr = (UserPrincipal) req.getUserPrincipal();
 
-        if(usr != null) {
-            Optional<User> dbUser = userDao.findByName(usr.getName());
-
-            if(dbUser.isPresent() && dbUser.get().getPassword().equals(usr.getPassword())) {
-                req.putHeader(ID, dbUser.get().getId());
-                filterChain.doFilter(req, servletResponse);
-            } else {
-                requireLogin(servletResponse);
-            }
-        } else {
+        if(Objects.isNull(usr)) {
             requireLogin(servletResponse);
-
+            return;
         }
+
+        Optional<User> dbUser = userDao.findByName(usr.getName());
+
+        if(dbUser.isEmpty() || !dbUser.get().getPassword().equals(usr.getPassword())) {
+            requireLogin(servletResponse);
+            return;
+        }
+
+        req.putHeader(ID, dbUser.get().getId());
+        filterChain.doFilter(req, servletResponse);
     }
 
     private static void requireLogin(HttpServletResponse resp) {

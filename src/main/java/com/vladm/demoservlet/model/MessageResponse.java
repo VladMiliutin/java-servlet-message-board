@@ -1,12 +1,13 @@
 package com.vladm.demoservlet.model;
 
+import java.util.Collections;
 import java.util.List;
 
 public class MessageResponse {
 
     private final String id;
-    private final String userId;
     private final String text;
+    private final String userId;
     private final String userName;
     private final boolean isReply;
     
@@ -14,10 +15,10 @@ public class MessageResponse {
     private final List<MessageResponse> replies;
 
 
-    public MessageResponse(String id, String userId, String text, String userName, boolean isReply, MessageResponse replyTo, List<MessageResponse> replies) {
+    public MessageResponse(String id, String text, String userId,  String userName, boolean isReply, MessageResponse replyTo, List<MessageResponse> replies) {
         this.id = id;
-        this.userId = userId;
         this.text = text;
+        this.userId = userId;
         this.userName = userName;
         this.isReply = isReply;
         this.replyTo = replyTo;
@@ -50,5 +51,15 @@ public class MessageResponse {
 
     public MessageResponse getReplyTo() {
         return replyTo;
+    }
+
+    public static MessageResponse make(Message message, User user, MessageResponse replyTo, List<MessageResponse> replies) {
+        return new MessageResponse(message.getId(), message.getText(), message.getUserId(),
+                user.getName(), message.isReply(), replyTo, replies);
+    }
+
+    public static MessageResponse make(Message message, User user) {
+        return new MessageResponse(message.getId(), message.getText(), message.getUserId(),
+                user.getName(), false, null, Collections.emptyList());
     }
 }

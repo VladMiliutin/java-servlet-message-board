@@ -45,6 +45,10 @@
             justify-content: left;
             font-size: 48px;
         }
+        .home {
+            display: block;
+            text-align: center;
+        }
         textarea
         {
             border:1px solid #999999;
@@ -63,6 +67,7 @@
     </script>
 </head>
 <body>
+<a class="home" href="<%=request.getScheme() + "://" + request.getHeader("Host") + request.getContextPath()%>">Home</a>
 <div class="box">
     <div class="user-info">
         User Info:

@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebFilter(servletNames = { "userServlet", "usersServlet", "messageServlet" })
+@WebFilter(servletNames = { "userServlet", "usersServlet", "messageServlet", "messagesServlet" })
 public class ExceptionHandler implements Filter {
 
     @Override

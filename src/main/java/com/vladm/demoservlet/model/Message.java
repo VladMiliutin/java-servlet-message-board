@@ -72,6 +72,14 @@ public class Message {
         this.replies.add(messageId);
     }
 
+    public String getReplyId() {
+        return replyId;
+    }
+
+    public void setReplyId(String replyId) {
+        this.replyId = replyId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -92,13 +100,5 @@ public class Message {
                 ", text='" + text + '\'' +
                 ", userId='" + userId + '\'' +
                 '}';
-    }
-
-    public String getReplyId() {
-        return replyId;
-    }
-
-    public void setReplyId(String replyId) {
-        this.replyId = replyId;
     }
 }

@@ -4,6 +4,12 @@
 <html>
 <head>
     <title>Users</title>
+    <style>
+        .home {
+            display: block;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 <%
@@ -24,6 +30,8 @@
     </tr>
 <% }
 %>
+
+    <a class="home" href="<%=request.getScheme() + "://" + request.getHeader("Host") + request.getContextPath()%>">Home</a>
 </table>
 </body>
 </html>

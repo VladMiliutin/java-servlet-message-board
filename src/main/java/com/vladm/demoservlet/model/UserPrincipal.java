@@ -4,10 +4,10 @@ import java.security.Principal;
 
 public class UserPrincipal implements Principal {
 
-    private String userId;
-    private String username;
+    private final String userId;
+    private final String username;
 
-    private String password;
+    private final String password;
 
     public UserPrincipal(String userId, String username, String password) {
         this.userId = userId;

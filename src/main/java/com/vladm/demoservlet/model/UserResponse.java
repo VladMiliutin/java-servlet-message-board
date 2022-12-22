@@ -32,4 +32,8 @@ public class UserResponse {
     public List<MessageResponse> getMessageResponses() {
         return messageResponses;
     }
+
+    public static UserResponse make(User user, List<MessageResponse> messageResponses) {
+        return new UserResponse(user.getId(), user.getName(), user.getEmail(), messageResponses);
+    }
 }
