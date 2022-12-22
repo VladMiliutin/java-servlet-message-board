@@ -24,7 +24,7 @@ public class MessageServlet extends HttpServlet {
 
         MessageResponse messageResp = messageService.transformToMessageResponse(message);
         req.setAttribute("message", messageResp);
-        req.getRequestDispatcher("/single-message.jsp").forward(req, resp);
+        req.getRequestDispatcher("/message.jsp").forward(req, resp);
     }
 
 }

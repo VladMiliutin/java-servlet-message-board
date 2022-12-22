@@ -43,7 +43,13 @@
         .reply-area {
             display: none;
         }
-
+        textarea
+        {
+            border:1px solid #999999;
+            width:100%;
+            margin:5px 0;
+            padding:3px;
+        }
     </style>
 
     <script>
@@ -81,7 +87,7 @@
         <% if(message.isReply()) { %>
             IN RESPONSE TO:
             <div class="reply-user-info">
-                <a href="../users/<%=message.getReplyTo().getUserId()%>"> <%=message.getReplyTo().getUserName()%></a> <a href="<%=message.getReplyTo().getMessageId()%>">says:</a>
+                <a href="../users/<%=message.getReplyTo().getUserId()%>"> <%=message.getReplyTo().getUserName()%></a> <a href="<%=message.getReplyTo().getId()%>">says:</a>
             </div>
             <div>
                 <%=message.getReplyTo().getText()%>
@@ -99,7 +105,7 @@
 
     <div class="tweet">
         <div class="user-info">
-            <a href="../users/<%=msg.getUserId()%>"> <%=message.getUserName()%></a> <a href="<%=msg.getMessageId()%>">says:</a>
+            <a href="../users/<%=msg.getUserId()%>"> <%=msg.getUserName()%></a> <a href="<%=msg.getId()%>">says:</a>
         </div>
         <div class="message">
             <%=msg.getText()%>

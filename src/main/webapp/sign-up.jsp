@@ -4,7 +4,7 @@
     <title>Sign Up</title>
 </head>
 <body>
-<form action="user" method="post">
+<form action="users" method="post">
     Username:
     <input name="username">
     Email:

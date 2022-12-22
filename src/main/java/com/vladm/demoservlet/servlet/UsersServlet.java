@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.*;
 
 import static com.vladm.demoservlet.model.RequestParams.*;
@@ -40,11 +39,22 @@ public class UsersServlet extends HttpServlet {
         }
 
         request.setAttribute("users", users);
-        redirectTo(request, response, "users.jsp");
+        forwardTo(request, response, "users.jsp");
 
     }
 
-    private static void redirectTo(HttpServletRequest request, HttpServletResponse response, String path) throws ServletException, IOException {
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String name = req.getParameter(USERNAME);
+        String email = req.getParameter(EMAIL);
+        String password = req.getParameter(PASSWORD);
+
+        User user = userService.createUser(name, email, password);
+
+        resp.sendRedirect(req.getContextPath() + "/users/" + user.getId());
+    }
+
+    private static void forwardTo(HttpServletRequest request, HttpServletResponse response, String path) throws ServletException, IOException {
         RequestDispatcher requestDispatcher = request.getRequestDispatcher(path);
         requestDispatcher.forward(request, response);
     }

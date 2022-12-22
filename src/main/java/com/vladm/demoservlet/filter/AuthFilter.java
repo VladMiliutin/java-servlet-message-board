@@ -24,14 +24,14 @@ public class AuthFilter extends HttpFilter {
     private final static Map<String, List<String>> ALLOW_URL_MAP = new HashMap<>();
 
     static {
-        ALLOW_URL_MAP.put("GET", List.of("/index", "/", "/sign-up.jsp", ""));
-        ALLOW_URL_MAP.put("POST", List.of("/user"));
+        ALLOW_URL_MAP.put("GET", List.of("/index", "/", "/sign-up.jsp", "", "/users"));
+        ALLOW_URL_MAP.put("POST", List.of("/users"));
     }
 
     // check url list where auth required :)
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        MutableHttpServletRequest req = new MutableHttpServletRequest((HttpServletRequest) servletRequest);
+    public void doFilter(HttpServletRequest servletRequest, HttpServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        MutableHttpServletRequest req = new MutableHttpServletRequest(servletRequest);
 
         List<String> allowUrls = ALLOW_URL_MAP.get(req.getMethod().toUpperCase());
 
@@ -52,10 +52,10 @@ public class AuthFilter extends HttpFilter {
                 req.putHeader(ID, dbUser.get().getId());
                 filterChain.doFilter(req, servletResponse);
             } else {
-                requireLogin((HttpServletResponse) servletResponse);
+                requireLogin(servletResponse);
             }
         } else {
-            requireLogin((HttpServletResponse) servletResponse);
+            requireLogin(servletResponse);
 
         }
     }

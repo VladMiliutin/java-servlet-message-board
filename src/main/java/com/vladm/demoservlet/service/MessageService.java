@@ -81,8 +81,9 @@ public class MessageService {
         final var user = userDao.findOne(message.getUserId()).orElse(User.DEFAULT);
         final var repliesWithUserInfo = messageReplies.stream()
                 .map(msg -> {
-                    final var usr = userDao.findOne(message.getUserId()).orElse(User.DEFAULT);
-
+                    final var usr = userDao.findOne(msg.getUserId()).orElse(User.DEFAULT);
+                    System.out.println("REPLY = " + msg);
+                    System.out.println("USR = " + usr);
                     // yea, it's reply, but it's inside replyList, so no need to mark as reply
                     return new MessageResponse(msg.getId(), usr.getId(), msg.getText(), usr.getName(), false, null, Collections.emptyList());
                 })

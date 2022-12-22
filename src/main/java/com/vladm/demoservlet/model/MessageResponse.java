@@ -4,7 +4,7 @@ import java.util.List;
 
 public class MessageResponse {
 
-    private final String messageId;
+    private final String id;
     private final String userId;
     private final String text;
     private final String userName;
@@ -14,8 +14,8 @@ public class MessageResponse {
     private final List<MessageResponse> replies;
 
 
-    public MessageResponse(String messageId, String userId, String text, String userName, boolean isReply, MessageResponse replyTo, List<MessageResponse> replies) {
-        this.messageId = messageId;
+    public MessageResponse(String id, String userId, String text, String userName, boolean isReply, MessageResponse replyTo, List<MessageResponse> replies) {
+        this.id = id;
         this.userId = userId;
         this.text = text;
         this.userName = userName;
@@ -24,8 +24,8 @@ public class MessageResponse {
         this.replies = replies;
     }
 
-    public String getMessageId() {
-        return messageId;
+    public String getId() {
+        return id;
     }
 
     public String getUserId() {

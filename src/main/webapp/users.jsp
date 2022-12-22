@@ -20,7 +20,7 @@
     <tr>
         <td><%=user.getName()%></td>
         <td><%=user.getEmail()%></td>
-        <td><a href="users?email=<%=user.getEmail()%>">Profile</a> </td>
+        <td><a href="users/<%=user.getId()%>">Profile</a> </td>
     </tr>
 <% }
 %>
