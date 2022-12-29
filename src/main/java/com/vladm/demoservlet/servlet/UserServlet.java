@@ -1,8 +1,9 @@
 package com.vladm.demoservlet.servlet;
 
+
 import com.vladm.demoservlet.model.UserResponse;
 import com.vladm.demoservlet.service.UserMessageService;
-import com.vladm.demoservlet.util.MutableHttpServletRequest;
+import com.vladm.demoservlet.utils.CustomServletRequest;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,23 +18,15 @@ public class UserServlet extends HttpServlet {
     private final UserMessageService userMessageService = UserMessageService.getInstance();
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        final String userId = ((MutableHttpServletRequest) request).getPath().substring("/users/".length());
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String userId = ((CustomServletRequest) req).getPath().substring("/users/".length());
 
-        if(userId.length() > 0) {
-            returnUserInfo(request, response, userId);
-            return;
+        if(userId.length() == 0) {
+            userId = CustomServletRequest.getUserId(req);
         }
 
-        returnUserInfo(request, response, MutableHttpServletRequest.userId(request));
+        UserResponse user = userMessageService.findUser(userId);
+        req.setAttribute("user", user);
+        req.getRequestDispatcher("/user.jsp").forward(req, resp);
     }
-
-    private void returnUserInfo(HttpServletRequest request, HttpServletResponse response, String userId) throws ServletException, IOException {
-        UserResponse userResponse = userMessageService.findUser(userId);
-        request.setAttribute("user", userResponse);
-
-        request.getRequestDispatcher("/user.jsp").forward(request, response);
-    }
-
-
 }

@@ -9,22 +9,20 @@ public class Message {
     private String id;
     private String text;
     private String userId;
-
     private boolean isReply;
+    private String replyToId;
+    private List<String> replyIds = new ArrayList<>();
 
-    private List<String> replies = new ArrayList<>();
-
-    private String replyId;
-
-    public Message(String id, String text, String userId, boolean isReply, String replyId) {
+    public Message(String id, String text, String userId, boolean isReply, String replyToId) {
         this.id = id;
         this.text = text;
         this.userId = userId;
         this.isReply = isReply;
-        this.replyId = replyId;
+        this.replyToId = replyToId;
     }
 
     public Message() {
+
     }
 
     public String getId() {
@@ -59,25 +57,24 @@ public class Message {
         isReply = reply;
     }
 
-    public List<String> getReplies() {
-        return replies;
+    public String getReplyToId() {
+        return replyToId;
     }
 
-    public void setReplies(List<String> replies) {
-        this.replies = replies;
+    public void setReplyToId(String replyToId) {
+        this.replyToId = replyToId;
     }
 
-
-    public void addReply(String messageId) {
-        this.replies.add(messageId);
+    public List<String> getReplyIds() {
+        return replyIds;
     }
 
-    public String getReplyId() {
-        return replyId;
+    public void setReplyIds(List<String> replyIds) {
+        this.replyIds = replyIds;
     }
 
-    public void setReplyId(String replyId) {
-        this.replyId = replyId;
+    public void addReplyId(String messageId) {
+        this.replyIds.add(messageId);
     }
 
     @Override

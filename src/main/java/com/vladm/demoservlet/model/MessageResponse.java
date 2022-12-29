@@ -9,13 +9,12 @@ public class MessageResponse {
     private final String text;
     private final String userId;
     private final String userName;
+
     private final boolean isReply;
-    
     private final MessageResponse replyTo;
     private final List<MessageResponse> replies;
 
-
-    public MessageResponse(String id, String text, String userId,  String userName, boolean isReply, MessageResponse replyTo, List<MessageResponse> replies) {
+    public MessageResponse(String id, String text, String userId, String userName, boolean isReply, MessageResponse replyTo, List<MessageResponse> replies) {
         this.id = id;
         this.text = text;
         this.userId = userId;
@@ -29,20 +28,16 @@ public class MessageResponse {
         return id;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
     public String getText() {
         return text;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUserId() {
+        return userId;
     }
 
-    public List<MessageResponse> getReplies() {
-        return replies;
+    public String getUserName() {
+        return userName;
     }
 
     public boolean isReply() {
@@ -53,13 +48,16 @@ public class MessageResponse {
         return replyTo;
     }
 
+    public List<MessageResponse> getReplies() {
+        return replies;
+    }
+
     public static MessageResponse make(Message message, User user, MessageResponse replyTo, List<MessageResponse> replies) {
         return new MessageResponse(message.getId(), message.getText(), message.getUserId(),
                 user.getName(), message.isReply(), replyTo, replies);
     }
 
     public static MessageResponse make(Message message, User user) {
-        return new MessageResponse(message.getId(), message.getText(), message.getUserId(),
-                user.getName(), false, null, Collections.emptyList());
+       return make(message, user, null, Collections.emptyList());
     }
 }

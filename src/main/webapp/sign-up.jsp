@@ -1,3 +1,4 @@
+<%@ page import="com.vladm.demoservlet.utils.RequestsConstants" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -6,11 +7,11 @@
 <body>
 <form action="users" method="post">
     Username:
-    <input name="username">
+    <input name="<%=RequestsConstants.NAME%>">
     Email:
-    <input name="email">
+    <input name="<%=RequestsConstants.EMAIL%>">
     Password:
-    <input name="password">
+    <input name="<%=RequestsConstants.PASSWORD%>">
     <input type="submit" value="sign up">
 </form>
 </body>

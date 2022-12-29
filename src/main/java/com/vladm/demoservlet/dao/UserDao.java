@@ -12,7 +12,9 @@ public interface UserDao {
     Optional<User> findOne(String id);
     Optional<User> findByName(String name);
     Optional<User> findByEmail(String email);
-    void delete(String id);
     User update(User user);
+    void delete(String id);
+
+    boolean userExists(User user);
 
 }

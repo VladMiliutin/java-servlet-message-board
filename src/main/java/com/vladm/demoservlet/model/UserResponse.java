@@ -8,13 +8,13 @@ public class UserResponse {
     private final String name;
     private final String email;
 
-    private final List<MessageResponse> messageResponses;
+    private final List<MessageResponse> messageList;
 
-    public UserResponse(String id, String name, String email, List<MessageResponse> messageResponses) {
+    public UserResponse(String id, String name, String email, List<MessageResponse> messageList) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.messageResponses = messageResponses;
+        this.messageList = messageList;
     }
 
     public String getId() {
@@ -29,11 +29,11 @@ public class UserResponse {
         return email;
     }
 
-    public List<MessageResponse> getMessageResponses() {
-        return messageResponses;
+    public List<MessageResponse> getMessageList() {
+        return messageList;
     }
 
-    public static UserResponse make(User user, List<MessageResponse> messageResponses) {
-        return new UserResponse(user.getId(), user.getName(), user.getEmail(), messageResponses);
+    public static UserResponse make(User user, List<MessageResponse> messageList) {
+        return new UserResponse(user.getId(), user.getName(), user.getEmail(), messageList);
     }
 }

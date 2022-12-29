@@ -1,9 +1,9 @@
-<%@ page import="com.vladm.demoservlet.model.Message" %>
 <%@ page import="com.vladm.demoservlet.model.MessageResponse" %>
+<%@ page import="com.vladm.demoservlet.utils.RequestsConstants" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <%
-  MessageResponse message = (MessageResponse) request.getAttribute("message");
+    MessageResponse message = (MessageResponse) request.getAttribute("message");
 %>
 <head>
     <title><%=message.getText().substring(0, Math.min(message.getText().length(), 10))%></title>
@@ -30,7 +30,6 @@
             font-size: 32px;
             font-weight: bold;
         }
-
         .reply-user-info {
             font-size: 24px;
             font-weight: bold;
@@ -39,7 +38,6 @@
             justify-content: left;
             font-size: 48px;
         }
-
         .reply-area {
             display: none;
         }
@@ -59,16 +57,13 @@
     <script>
         async function post() {
             let msg = document.getElementById('message').value;
-
             let href = window.location.href;
             let lastIndex = href.lastIndexOf('/');
             let id = href.substring(lastIndex + 1, href.length);
-
-            let url = href.substring(0, lastIndex) + '?replyTo=' + id;
+            let url = href.substring(0, lastIndex) + '?<%=RequestsConstants.REPLY_TO%>=' + id;
             await fetch(url, {method: 'POST', body: msg})
             document.location.reload()
         }
-
         async function showArea() {
             var x = document.getElementById("reply-area");
             if (x.style.display === "none") {
@@ -90,13 +85,13 @@
             <%=message.getText()%>
         </div>
         <% if(message.isReply()) { %>
-            IN RESPONSE TO:
-            <div class="reply-user-info">
-                <a href="../users/<%=message.getReplyTo().getUserId()%>"> <%=message.getReplyTo().getUserName()%></a> <a href="<%=message.getReplyTo().getId()%>">says:</a>
-            </div>
-            <div>
-                <%=message.getReplyTo().getText()%>
-            </div>
+        IN RESPONSE TO:
+        <div class="reply-user-info">
+            <a href="../users/<%=message.getReplyTo().getUserId()%>"> <%=message.getReplyTo().getUserName()%></a> <a href="<%=message.getReplyTo().getId()%>">says:</a>
+        </div>
+        <div>
+            <%=message.getReplyTo().getText()%>
+        </div>
         <% } %>
 
         <button class="reply" onclick="showArea()">REPLY</button>

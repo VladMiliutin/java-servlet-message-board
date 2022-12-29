@@ -1,7 +1,6 @@
-<%@ page import="com.vladm.demoservlet.model.User" %>
-<%@ page import="java.util.List" %>
 <%@ page import="com.vladm.demoservlet.model.UserResponse" %>
 <%@ page import="com.vladm.demoservlet.model.MessageResponse" %>
+<%@ page import="com.vladm.demoservlet.utils.RequestsConstants" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -60,7 +59,6 @@
     <script>
         async function post() {
             let msg = document.getElementById('message').value;
-
             await fetch('../messages', {method: 'POST', body: msg})
             document.location.reload()
         }
@@ -79,7 +77,7 @@
         </div>
     </div>
     <div class="tweets-box">
-        <% if(user.getId().equals(request.getHeader("id"))) { %>
+        <% if(user.getId().equals(request.getHeader(RequestsConstants.ID))) { %>
         <h1>What's on your mind</h1>
         <div class="send-tweet">
             <textarea id="message"></textarea>
@@ -88,7 +86,7 @@
         <% } %>
         Tweets:
         <div class="user-tweets">
-            <% for (MessageResponse msg : user.getMessageResponses()) { %>
+            <% for (MessageResponse msg : user.getMessageList()) { %>
             <div class="tweet">
                 <div class="user-info">
                     <a href="../users/<%=user.getId()%>"> <%=user.getName()%></a> says:

@@ -22,16 +22,15 @@
         <td>Email</td>
         <td>Link</td>
     </tr>
-<% for (User user : users) { %>
+    <% for (User user : users) { %>
     <tr>
         <td><%=user.getName()%></td>
         <td><%=user.getEmail()%></td>
         <td><a href="users/<%=user.getId()%>">Profile</a> </td>
     </tr>
-<% }
-%>
+    <% }
+    %>
 
     <a class="home" href="<%=request.getScheme() + "://" + request.getHeader("Host") + request.getContextPath()%>">Home</a>
 </table>
 </body>
-</html>

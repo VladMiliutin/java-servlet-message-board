@@ -10,9 +10,9 @@ public interface MessageDao {
     Message save(Message message);
     List<Message> findAll();
     Optional<Message> findOne(String id);
-    List<Message> findByUserId(String userId);
-    List<Message> findAllByIds(List<String> ids);
-    void delete(String id);
+    List<Message> findByUserId(String id);
+    List<Message> findByIds(List<String> ids);
     Message update(Message message);
+    void delete(String id);
 
 }

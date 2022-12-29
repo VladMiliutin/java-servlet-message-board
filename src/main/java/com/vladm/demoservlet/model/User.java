@@ -13,8 +13,6 @@ public class User {
 
     private List<String> messages = new ArrayList<>();
 
-    public final static User DEFAULT = new User("not-found", "default", "default", "");
-
     public User(String id, String name, String email, String password){
         this.id = id;
         this.name = name;
@@ -22,10 +20,13 @@ public class User {
         this.password = password;
     }
 
-    public User() {
+    public User(){
 
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
     public void setName(String name){
         this.name = name;
     }
@@ -34,6 +35,9 @@ public class User {
         this.email = email;
     }
 
+    public String getId() {
+        return id;
+    }
     public String getName() {
         return name;
     }
@@ -42,20 +46,12 @@ public class User {
         return email;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void addMessage(String message){
-        this.messages.add(message);
+    public void addMessage(String messageId) {
+        this.messages.add(messageId);
     }
 
     public List<String> getMessages() {
-        return messages;
+        return this.messages;
     }
 
     public void setMessages(List<String> messages) {
@@ -71,16 +67,16 @@ public class User {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(id, name, email);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(email, user.email);
+        return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(email, user.email) && Objects.equals(messages, user.messages);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, email, messages);
     }
 
     @Override
@@ -89,6 +85,7 @@ public class User {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
+                ", messages=" + messages +
                 '}';
     }
 }

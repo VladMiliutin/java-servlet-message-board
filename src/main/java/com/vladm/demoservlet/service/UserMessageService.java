@@ -5,14 +5,10 @@ import com.vladm.demoservlet.model.MessageResponse;
 import com.vladm.demoservlet.model.User;
 import com.vladm.demoservlet.model.UserResponse;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * Helps to create User/MessageResponse
- */
 public class UserMessageService {
 
     private final UserService userService;
@@ -26,48 +22,52 @@ public class UserMessageService {
     }
 
     public UserResponse findUser(String userId) {
-        final var user = userService.findOne(userId);
-        final var messages = this.findMessagesByUserId(userId);
+        final User user = userService.findOne(userId);
+        List<MessageResponse> allMessagesByUserId = this.findAllMessagesByUserId(userId);
 
-        return UserResponse.make(user, messages);
+        return UserResponse.make(user, allMessagesByUserId);
     }
 
-    public MessageResponse findMessageById(String id) {
-        return transformToMessageResponse(messageService.findOne(id));
+    public MessageResponse findMessageById(String messageId) {
+        Message message = messageService.findOne(messageId);
+        return transformToMessageResponse(message);
     }
 
-    public List<MessageResponse> findMessagesByUserId(String userId) {
-        return messageService.findAll(userId).stream()
+    public List<MessageResponse> findAllMessagesByUserId(String userId) {
+        List<Message> messages = messageService.findAll(userId);
+
+        return messages.stream()
                 .map(this::transformToMessageResponse)
                 .collect(Collectors.toList());
     }
 
     private MessageResponse transformToMessageResponse(Message message) {
-        final var messageReplies =  messageService.findAllReplies(message.getId());
+        List<Message> replies = messageService.findAllReplies(message.getId());
 
-        final var replyTo = Optional.ofNullable(message.getReplyId())
+        final MessageResponse replyTo = Optional.ofNullable(message.getReplyToId())
                 .map(id -> {
-                    final var msg = messageService.findOne(id);
-                    final var usr = userService.findOne(msg.getUserId());
+                    Message reply = messageService.findOne(id);
+                    User user = userService.findOne(reply.getUserId());
 
-                    return MessageResponse.make(msg, usr);
-                })
-                .orElse(null);
+                    return MessageResponse.make(reply, user);
+                }).orElse(null);
 
-        final var user = userService.findOne(message.getUserId());
-        final var repliesWithUserInfo = messageReplies.stream()
+        User user = userService.findOne(message.getUserId());
+        List<MessageResponse> repliesWithUserInfo = replies.stream()
                 .map(msg -> {
-                    final var usr = userService.findOne(msg.getUserId());
-                    // yea, it's reply, but it's inside replyList, so no need to mark as reply
-                    return MessageResponse.make(msg, usr);
+                    User usr = userService.findOne(msg.getUserId());
+
+                    return MessageResponse.make(msg, usr) ;
                 })
                 .collect(Collectors.toList());
 
         return MessageResponse.make(message, user, replyTo, repliesWithUserInfo);
     }
 
+
+
     public static UserMessageService getInstance() {
-        if(INSTANCE == null){
+        if(INSTANCE == null) {
             INSTANCE = new UserMessageService(UserService.getInstance(), MessageService.getInstance());
         }
 

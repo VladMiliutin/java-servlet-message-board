@@ -1,69 +1,69 @@
 package com.vladm.demoservlet.filter;
 
-import com.vladm.demoservlet.dao.FileStorageUserDao;
-import com.vladm.demoservlet.dao.UserDao;
 import com.vladm.demoservlet.model.User;
 import com.vladm.demoservlet.model.UserPrincipal;
-import com.vladm.demoservlet.util.MutableHttpServletRequest;
-import jakarta.servlet.*;
+import com.vladm.demoservlet.service.UserService;
+import com.vladm.demoservlet.utils.CustomServletRequest;
+import com.vladm.demoservlet.utils.RequestsConstants;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import static com.vladm.demoservlet.model.RequestParams.ID;
-
+// filter all requests
 @WebFilter(urlPatterns = "/*")
 public class AuthFilter extends HttpFilter {
 
-    private final UserDao userDao = FileStorageUserDao.getInstance();
+    private final UserService userService = UserService.getInstance();
 
-    private final static Map<String, List<String>> ALLOW_URL_MAP = new HashMap<>();
+    private final static Map<String, List<String>> ALLOW_METHOD_URL_MAP = new HashMap<>();
 
     static {
-        ALLOW_URL_MAP.put("GET", List.of("/index", "/", "/sign-up.jsp", "", "/users"));
-        ALLOW_URL_MAP.put("POST", List.of("/users"));
+        ALLOW_METHOD_URL_MAP.put("GET", List.of("/index", "/", "", "/sign-up.jsp"));
+        ALLOW_METHOD_URL_MAP.put("POST", List.of("/users"));
     }
 
-    // check url list where auth required :)
     @Override
-    public void doFilter(HttpServletRequest servletRequest, HttpServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        MutableHttpServletRequest req = new MutableHttpServletRequest(servletRequest);
+    protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
+        CustomServletRequest request = CustomServletRequest.of(req);
 
-        List<String> allowUrls = ALLOW_URL_MAP.get(req.getMethod().toUpperCase());
+        List<String> allowUrls = ALLOW_METHOD_URL_MAP.get(request.getMethod().toUpperCase());
 
         boolean allow = allowUrls.stream()
-                .anyMatch(urlPatter -> req.getPath().equalsIgnoreCase(urlPatter));
+                .anyMatch(urlPattern -> request.getPath().equalsIgnoreCase(urlPattern));
 
-        if(allow){
-            filterChain.doFilter(servletRequest, servletResponse);
+        if(allow) {
+            chain.doFilter(req, res);
             return;
         }
 
-        var usr = (UserPrincipal) req.getUserPrincipal();
+        var userPrincipal = (UserPrincipal) request.getUserPrincipal();
 
-        if(Objects.isNull(usr)) {
-            requireLogin(servletResponse);
+        if(userPrincipal == null) {
+            requireLogin(res);
             return;
         }
 
-        Optional<User> dbUser = userDao.findByName(usr.getName());
+        Optional<User> dbUser = userService.findByName(userPrincipal.getName());
 
-        if(dbUser.isEmpty() || !dbUser.get().getPassword().equals(usr.getPassword())) {
-            requireLogin(servletResponse);
-            return;
+        if(dbUser.isPresent() && dbUser.get().getPassword().equals(userPrincipal.getPassword())) {
+            request.putHeader(RequestsConstants.ID, dbUser.get().getId());
+            chain.doFilter(request, res);
+        } else {
+            requireLogin(res);
         }
-
-        req.putHeader(ID, dbUser.get().getId());
-        filterChain.doFilter(req, servletResponse);
     }
 
-    private static void requireLogin(HttpServletResponse resp) {
-        resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        resp.setHeader("WWW-Authenticate", "Basic");
+    private static void requireLogin(HttpServletResponse res) {
+        res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        res.setHeader("WWW-Authenticate", "Basic");
     }
-
 }

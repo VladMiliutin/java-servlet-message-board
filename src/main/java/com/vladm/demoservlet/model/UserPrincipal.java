@@ -4,27 +4,27 @@ import java.security.Principal;
 
 public class UserPrincipal implements Principal {
 
-    private final String userId;
-    private final String username;
+    private String id;
+    private String name;
+    private String password;
 
-    private final String password;
-
-    public UserPrincipal(String userId, String username, String password) {
-        this.userId = userId;
-        this.username = username;
+    public UserPrincipal(String id, String name, String password) {
+        this.id = id;
+        this.name = name;
         this.password = password;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getId() {
+        return id;
+    }
+
+
+    public String getPassword() {
+        return password;
     }
 
     @Override
     public String getName() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
+        return name;
     }
 }

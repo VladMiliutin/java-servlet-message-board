@@ -7,7 +7,10 @@ import com.vladm.demoservlet.dao.UserDao;
 import com.vladm.demoservlet.exception.NotFoundException;
 import com.vladm.demoservlet.model.Message;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class MessageService {
@@ -22,7 +25,16 @@ public class MessageService {
         this.messageDao = messageDao;
     }
 
-    public Optional<Message> publishMessage(String userId, String text, Optional<String> replyToId) {
+
+    public Message findOne(String id) {
+        return messageDao.findOne(id)
+                .orElseThrow(NotFoundException::new);
+    }
+    public List<Message> findAll(String userId) {
+        return messageDao.findByUserId(userId);
+    }
+
+    public Message save(String userId, String text, Optional<String> replyToId) {
         return userDao.findOne(userId)
                 .map(usr -> {
                     String id = UUID.randomUUID().toString();
@@ -31,31 +43,19 @@ public class MessageService {
                     usr.addMessage(msg.getId());
                     userDao.update(usr);
 
-                    replyToId.ifPresent(msgId -> messageDao.findOne(msgId)
-                            .ifPresent(persistedMsg -> {
-                                persistedMsg.addReply(id);
-                                messageDao.update(persistedMsg);
-                            })
-                    );
+                    replyToId.flatMap(messageDao::findOne).ifPresent(persistedMsg -> {
+                        persistedMsg.addReplyId(id);
+                        messageDao.update(persistedMsg);
+                    });
 
                     return msg;
-                });
-    }
-
-    public Message findOne(String id) {
-        return messageDao.findOne(id)
-                .orElseThrow(() -> new NotFoundException("Message not found"));
-    }
-
-    public List<Message> findAll(String userId) {
-        return userDao.findOne(userId)
-                .map(usr -> messageDao.findByUserId(userId))
-                .orElse(new ArrayList<>());
+                })
+                .orElseThrow(NotFoundException::new);
     }
 
     public List<Message> findAllReplies(String messageId) {
         return messageDao.findOne(messageId)
-                .map(Message::getReplies)
+                .map(Message::getReplyIds)
                 .orElse(new ArrayList<>())
                 .stream()
                 .map(messageDao::findOne)
@@ -65,7 +65,7 @@ public class MessageService {
     }
 
     public static MessageService getInstance(){
-        if(INSTANCE == null){
+        if(INSTANCE == null) {
             INSTANCE = new MessageService(FileStorageUserDao.getInstance(), FSMessageDao.getInstance());
         }
 

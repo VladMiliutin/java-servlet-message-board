@@ -5,10 +5,11 @@ public class ClientException extends RuntimeException {
     public final int statusCode;
 
     public ClientException(int statusCode) {
-        this(statusCode, "Invalid request");
+        super("Invalid request");
+        this.statusCode = statusCode;
     }
 
-    public ClientException(int statusCode, String message) {
+    public ClientException(String message, int statusCode) {
         super(message);
         this.statusCode = statusCode;
     }
